@@ -8,27 +8,26 @@
 
 `pip install numpy==1.19.5`
 
-##Requirements
-confusion-matrix
+## Requirements
+- confusion-matrix
 
+- Keras
 
-Keras
+- matplotlib
 
-matplotlib
+- numpy
 
-numpy
+- Pillow
 
-Pillow
+- pip
 
-pip
+- scikit-learn
 
-scikit-learn
+- scipy
 
-scipy
+- sklearn
 
-sklearn
-
-##Usage
+## Usage
 1、You can change the datasets and related data here to set different tasks：
 
 `train_generator=datagen.flow_from_directory('/home/train_data',target_size=(512,512),batch_size=4, save_format='jpg')`
@@ -41,9 +40,9 @@ sklearn
 
 `model.load_weights('\home\.h5')`
 
-3、. Run `python STNdensenet121.py`.
+3、Run `python STNdensenet121.py`.
 
-##Result
+## Result
 
 | Method |   Grain   | Clastic | Mechanical genesis | Mixture | Basic category |
 |:--------------:|:---------:|:-----:|:------------------:|:-----:|:----:|
