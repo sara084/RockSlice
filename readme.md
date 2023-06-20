@@ -1,7 +1,8 @@
-#RockS2Net
-*RockS2Net is a python project that is a Siamese network for rock classification*
+# RockS2Net
 
-##Installation
+**RockS2Net is a python project that is a Siamese network for rock classification**
+
+## Installation
 
 `pip install tensorflow==2.2.0`
 
