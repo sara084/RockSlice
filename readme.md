@@ -9,23 +9,23 @@
 `pip install numpy==1.19.5`
 
 ## Requirements
-- confusion-matrix
+- confusion-matrix==0.1
 
-- Keras
+- Keras==2.3.1
 
-- matplotlib
+- matplotlib==3.5.2
 
-- numpy
+- numpy==1.19.5
 
-- Pillow
+- Pillow==9.3.0
 
-- pip
+- pip==22.3.1
 
-- scikit-learn
+- scikit-learn==1.0.2
 
-- scipy
+- scipy==1.7.3
 
-- sklearn
+- sklearn==0.0.post1
 
 ## Usage
 1、You can change the datasets and related data here to set different tasks：
