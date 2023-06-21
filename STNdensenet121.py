@@ -1,23 +1,24 @@
+#-*- coding:utf-8 -*-
 import os
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from tensorflow.python.keras import layers
 from tensorflow.python.keras.models import Model
-import densenet121_pengzhang
+from tensorflow.python.keras.applications import densenet
 from tensorflow.python.keras.preprocessing.image import  ImageDataGenerator
 from tensorflow.python.keras import backend
-from tensorflow.python.keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from pltshow import LossHistory
 from confusion_matrix import plot_confusion_matrix
 from utils import initial_weights_without_scale
 from stn_layers3 import BilinearInterpolation
 from tensorflow.python.keras.callbacks import ModelCheckpoint, TensorBoard
+from tensorflow.python.keras.callbacks import ModelCheckpoint, TensorBoard
 
 image_size = (512, 512, 3)
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1,2"
 
 # config = tf.ConfigProto()
 # config.gpu_options.allow_growth = True
@@ -26,17 +27,17 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1,2"
 datagen=ImageDataGenerator(samplewise_center=True)
 
 train_generator=datagen.flow_from_directory(
-  r'/data/tongshun/new/yanshimingcheng_train',
-  target_size=(512,512),batch_size=4
+    '/home/lht-lht/RockSlice/hunruwu_train',
+    target_size=(512,512),batch_size=4, save_format='jpg'
 )
 
 test_generator=datagen.flow_from_directory(
-  r'/data/tongshun/new/yanshimingcheng_test',
-  target_size=(512,512),batch_size=4
+  '/home/lht-lht/RockSlice/hunruwu_test',
+  target_size=(512,512),batch_size=4, save_format='jpg'
 )
 x_input = layers.Input(shape=image_size, name='input')
 
-weight_path="/data/tongshun/new/densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5"
+weight_path="/home/lht-lht/RockSlice/densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5"
 # x = x_input
 
 scales = [1.0, 0.8]
@@ -89,7 +90,7 @@ x = layers.Concatenate(axis=0)([x_input] +
                                [stn_fc(x_input, x_stn_conv, scales[i]) for i in range(1, len(scales))])
 
 # x = x_input
-base_model = densenet121_pengzhang.DenseNet121(weights=weight_path, include_top=False, pooling='avg')
+base_model = densenet.DenseNet121(weights=weight_path, include_top=False, pooling='avg')
 for layer in base_model.layers:
     layer.trainable = True
 
@@ -102,7 +103,7 @@ for idx, sx in enumerate(x):
 
 x = layers.Concatenate(axis=0)(x_scales)
 x = layers.Dense(64, activation="relu")(x)
-x = layers.Dense(9, activation='softmax')(x)
+x = layers.Dense(7, activation='softmax')(x)
 
 x = layers.Lambda(lambda input_tensor: tf.split(input_tensor, len(scales)))(x)
 x = layers.Average()(x)
@@ -110,7 +111,7 @@ x = layers.Average()(x)
 model= Model(inputs=x_input,outputs=x)
 model.compile(optimizer=Adam(lr=1e-5), loss='categorical_crossentropy',metrics = ['accuracy'])
 history = LossHistory()
-checkpoint = ModelCheckpoint( r"/data/tongshun/new/result/yanshimingcheng/STNdensenet121pengzhangyanshimingcheng_weights.h5",
+checkpoint = ModelCheckpoint("/home/lht-lht/RockSlice/result/hunruwu/STNdensenet121hunruwu_weights.h5",
                                  monitor="val_acc",
                                  mode='max',
                                  save_weights_only=True,
@@ -118,16 +119,17 @@ checkpoint = ModelCheckpoint( r"/data/tongshun/new/result/yanshimingcheng/STNden
                                  verbose=1,
                                  period=1)
 callback_lists=[history,checkpoint]
-model.fit_generator(train_generator,validation_data=test_generator,epochs=300,callbacks=callback_lists,verbose=2)
-history.loss_plot('epoch',r'/data/tongshun/new/result/yanshimingcheng/STNdensenet121pengzhang_yanshimingcheng.png',
-                          r'/data/tongshun/new/result/yanshimingcheng/STNdensenet121pengzhang_yanshimingcheng.txt')
-labels=[
-'其他','岩屑砂岩','花岗岩','粉砂岩',
-'石英砂岩', '凝灰岩', '板岩','玄武岩','闪长岩']
+model.fit(train_generator,validation_data=test_generator,epochs=300,callbacks=callback_lists,verbose=2)
+
+history.loss_plot('epoch', '/home/lht-lht/RockSlice/result/hunruwu/STNdensenet121_hunruwu.png',
+                           '/home/lht-lht/RockSlice/result/hunruwu/STNdensenet121_hunruwu.txt')
+#labels=['粉砂质,'钙质','硅质','含粉砂质','其他', '炭质', '铁质']
+labels=["fenshazhi","gaizhi","guizhi","hanfenshazhi","qita","tanzhi","tiezhi"]
+model.load_weights('\home\lht-lht\RockSlice\result\hunruwu\STNdensenet121hunruwu_weights.h5')
 y_true,y_pred=[],[]
 for i in range(len(test_generator)):
     y_pred.extend(np.argmax(model.predict(test_generator[i][0]),axis=1))
     y_true.extend(np.argmax(test_generator[i][1],axis=1))
 print(y_true)
 print(y_pred)
-plot_confusion_matrix(y_true,y_pred,labels,save_path=r'/data/tongshun/new/result/yanshimingcheng/STNdensenet121pengzhang_yanshimingcheng-confusion_matrix.png')
+plot_confusion_matrix(y_true,y_pred,labels,save_path='/home/lht-lht/RockSlice/result/hunruwu/STNdensenet121_hunruwu-confusion_matrix.png')
