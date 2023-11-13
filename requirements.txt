@@ -1,0 +1,17 @@
+confusion-matrix==0.1
+
+Keras==2.3.1
+
+matplotlib==3.5.2
+
+numpy==1.19.5
+
+Pillow==9.3.0
+
+pip==22.3.1
+
+scikit-learn==1.0.2
+
+scipy==1.7.3
+
+sklearn==0.0.post1
