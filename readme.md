@@ -53,3 +53,9 @@
 | DarkNet53 | 86.12%    | 89.91% |    92.54%   | 91.67% | 88.83% |
 | EfficientNetB0 | 86.91%    | 90.42% |    96.69%   | 91.94% | 89.96% |
 
+## Eval time
+
+| Method |   Grain（ms）   | Clastic（ms） | Mechanical genesis（ms） | Mixture（ms） | Basic category（ms） |
+|:--------------:|:---------:|:-----:|:------------------:|:-----:|:----:|
+|RockS2Net（Ours）| 320.11    | 283.11 |    314.89   | 298.67 | 289.44 |
+
