@@ -8,6 +8,7 @@
 
 `pip install numpy==1.19.5`
 
+`pip install -r requirements.txt`
 ## Requirements
 - confusion-matrix==0.1
 
