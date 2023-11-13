@@ -35,6 +35,7 @@
 `test_generator=datagen.flow_from_directory('/home/test_data',target_size=(512,512),batch_size=4, save_format='jpg')`
 
 2、You can add weight files here：
+
 `7z densenet121_weights_tf_dim_ordering_tf_kernels_notop.7z -r -o /home`
 
 `weight_path="/home/.h5"`
