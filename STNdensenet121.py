@@ -17,37 +17,37 @@ from stn_layers3 import BilinearInterpolation
 from tensorflow.python.keras.callbacks import ModelCheckpoint, TensorBoard
 from tensorflow.python.keras.callbacks import ModelCheckpoint, TensorBoard
 
-image_size = (512, 512, 3)
+image_size = (512, 512, 3) #Resize image size
 
 
 # config = tf.ConfigProto()
 # config.gpu_options.allow_growth = True
 # backend.set_session(tf.Session(config=config))
 
-datagen=ImageDataGenerator(samplewise_center=True)
+datagen=ImageDataGenerator(samplewise_center=True) #init dataloader
 
-train_generator=datagen.flow_from_directory(
+train_generator=datagen.flow_from_directory(    #load train dataset
     '/home/lht-lht/RockSlice/hunruwu_train',
     target_size=(512,512),batch_size=4, save_format='jpg'
 )
 
-test_generator=datagen.flow_from_directory(
+test_generator=datagen.flow_from_directory(  #load test dataset
   '/home/lht-lht/RockSlice/hunruwu_test',
   target_size=(512,512),batch_size=4, save_format='jpg'
 )
 x_input = layers.Input(shape=image_size, name='input')
 
-weight_path="/home/lht-lht/RockSlice/densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5"
-# x = x_input
+weight_path="/home/lht-lht/RockSlice/densenet121_weights_tf_dim_ordering_tf_kernels_notop.h5" #load weight
+# x = x_input 
 
 scales = [1.0, 0.8]
 
 x_input = layers.Input(shape=image_size, name='input')
 
 
-def stn_conv(input_tensor):
+def stn_conv(input_tensor): # model code for stn
     xloc = layers.Conv2D(16, (7, 7), activation='relu')(input_tensor)
-    xloc = layers.MaxPooling2D((2, 2), strides=(2, 2))(xloc)
+    xloc = layers.MaxPooling2D((2, 2), strides=(2, 2))(xloc) 
 
     xloc = layers.Conv2D(32, (5, 5), activation='relu')(xloc)
     xloc = layers.MaxPooling2D((2, 2), strides=(2, 2))(xloc)
@@ -64,7 +64,7 @@ def stn_fc(input_tensor, input_xloc, scale):
     xloc = layers.BatchNormalization(name='stn_bn_'+str(scale))(input_xloc)
     xloc = layers.Dropout(0.5, name='stn_drop_'+str(scale))(xloc)
 
-    weights = initial_weights_without_scale(64)
+    weights = initial_weights_without_scale(64) #init weight
     xloc = layers.Dense(2, weights=weights, name='theta'+str(scale), activation='tanh')(xloc)
     # xloc = layers.Dense(2, weights=weights, name='fc_'+str(scale))(xloc)
 
@@ -124,12 +124,12 @@ model.fit(train_generator,validation_data=test_generator,epochs=300,callbacks=ca
 history.loss_plot('epoch', '/home/lht-lht/RockSlice/result/hunruwu/STNdensenet121_hunruwu.png',
                            '/home/lht-lht/RockSlice/result/hunruwu/STNdensenet121_hunruwu.txt')
 #labels=['粉砂质,'钙质','硅质','含粉砂质','其他', '炭质', '铁质']
-labels=["fenshazhi","gaizhi","guizhi","hanfenshazhi","qita","tanzhi","tiezhi"]
-model.load_weights('\home\lht-lht\RockSlice\result\hunruwu\STNdensenet121hunruwu_weights.h5')
+labels=["fenshazhi","gaizhi","guizhi","hanfenshazhi","qita","tanzhi","tiezhi"] #rock label
+model.load_weights('\home\lht-lht\RockSlice\result\hunruwu\STNdensenet121hunruwu_weights.h5') #load weight
 y_true,y_pred=[],[]
 for i in range(len(test_generator)):
     y_pred.extend(np.argmax(model.predict(test_generator[i][0]),axis=1))
     y_true.extend(np.argmax(test_generator[i][1],axis=1))
-print(y_true)
+print(y_true) 
 print(y_pred)
-plot_confusion_matrix(y_true,y_pred,labels,save_path='/home/lht-lht/RockSlice/result/hunruwu/STNdensenet121_hunruwu-confusion_matrix.png')
+plot_confusion_matrix(y_true,y_pred,labels,save_path='/home/lht-lht/RockSlice/result/hunruwu/STNdensenet121_hunruwu-confusion_matrix.png') save eval result
